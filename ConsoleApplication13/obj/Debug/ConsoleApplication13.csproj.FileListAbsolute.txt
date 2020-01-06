@@ -1,0 +1,6 @@
+C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\bin\Debug\ConsoleApplication13.exe.config
+C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\bin\Debug\ConsoleApplication13.exe
+C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\bin\Debug\ConsoleApplication13.pdb
+C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\obj\Debug\ConsoleApplication13.csprojResolveAssemblyReference.cache
+C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\obj\Debug\ConsoleApplication13.exe
+C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\obj\Debug\ConsoleApplication13.pdb

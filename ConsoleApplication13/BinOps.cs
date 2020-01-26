@@ -8,6 +8,9 @@ namespace cipher
 {
     static class Cipher
     {
+        static int[] Zero = new int[] { 0 };
+        static int[] One = new int[] { 1 };
+
 
         static int[] PrimeNumbers = new int[]
         {

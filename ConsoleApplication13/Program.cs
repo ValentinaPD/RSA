@@ -11,6 +11,7 @@ namespace ConsoleApplication13
     {
         static void Main(string[] args)
         {
+            
             string Text = "доброе утро, good morning!";
             key PublicKey = new key();
             key PrivateKey = new key();
@@ -18,10 +19,12 @@ namespace ConsoleApplication13
             generator_key.GenerateKeys();
             Cryptor cryptor = new Cryptor();
             PublicKey.EditKeys(generator_key.GetOpenKey());
-            PrivateKey.EditKeys(generator_key.GetPrivateKey());            
-            
-            string str = cryptor.Decrypt(cryptor.Encrypt(Text, PublicKey), PrivateKey);
+            PrivateKey.EditKeys(generator_key.GetPrivateKey());
+            int[] enctr = cryptor.Encrypt(Text, PublicKey);
+           
+            string str = cryptor.Decrypt(enctr, PrivateKey);
             Console.WriteLine(str);
+            
         }
         
     }
@@ -29,6 +32,7 @@ namespace ConsoleApplication13
     {
         int KEY;
         int n;
+       
         public int GetKey()
         {
             return this.KEY;
@@ -67,13 +71,14 @@ namespace ConsoleApplication13
         }
         public GeneratorKey()
         {
+            
             GenerateKeys();
 
         }
         public void GenerateKeys()
         {
-            int p;
-            int q;
+            int p = 0;
+            int q = 0;
 
             do
             {
@@ -84,7 +89,7 @@ namespace ConsoleApplication13
             int fn = (p - 1) * (q - 1);
             int d = GetD(fn);
             int e = GetE(fn, d);
-
+           
             this.PublicKey.EditKeys(d, n);
             this.PrivateKey.EditKeys(e, n);
         }
@@ -93,13 +98,14 @@ namespace ConsoleApplication13
             Random rand = new Random();
             int d = 0;
             do
-                d = rand.Next() % 100;
+                d = rand.Next() % 100000;
             while (nod(d, fn) != 1);
             return d;
         }
         public static int GetE(int fn, int d)
         {
-            int e = 0;
+            Random rand = new Random();
+            int e = rand.Next() % 10000;
             do
                 e += 1;
             while ((e * d) % (fn) != 1);
@@ -127,7 +133,7 @@ namespace ConsoleApplication13
             {
                 p = rand.Next() % 100;
                 p = sundaram(p);
-            } while (p < 10);
+            } while (p < 100);
 
             return p;
         }

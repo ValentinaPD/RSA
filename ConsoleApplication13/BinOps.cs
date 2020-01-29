@@ -4,75 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace cipher
+namespace BinOps
 {
-    static class Cipher
+    static class BinOps
     {
-        static int[] Zero = new int[] { 0 };
         static int[] One = new int[] { 1 };
+        static int[] Zero = new int[] { 0 };
 
-
-        static int[] PrimeNumbers = new int[]
-        {
-            5, 7, 11, 13, 17, 19, 23
-        };
-
-        //Return a random prime number
-        internal static int[] GetPrimeNumber(int length)
-        {
-            return null;
-            //Define an empty int array
-            int[] number = new int[length];
-
-            bool is_multiply_of = false;
-
-            int counter;
-
-            while (true)
-            {
-                is_multiply_of = false;
-
-                #region Cut off multiples of three
-                counter = 0;
-
-                for (int i = 0; i < length - 1; i++)
-                {
-                    //Fill the array with random bits
-                    number[i] = new Random().Next() % 2;
-
-                    if (number[i] == 1)
-                    {
-                        if (i % 2 == 0)
-                        {
-                            counter++;
-                            continue;
-                        }
-                        counter--;
-                    }
-                }
-                if (counter % 3 == 0)
-                {
-                    continue;
-                }
-                #endregion
-
-                for (int i = 0; i < PrimeNumbers.Length; i++)
-                {
-                    //TODO: Convenient increment is required
-                    if (IsMultiplyOf(number, DecimalToBinary(PrimeNumbers[i])))
-                    {
-                        is_multiply_of = true;
-                        break;
-                    }
-                }
-                if (!is_multiply_of)
-                {
-                    break;
-                }
-            }
-            //Cut off even numbers
-            number[length - 1] = 1;
-        }
+        #region mes
+        static string mes = "Sorry. Of course, I understand that I have to realize a situation where the multiplicand is shorter than the factor, but I'm very lazy, sorry again, please swap your values";
+        #endregion
 
 
         internal static (int[], int[]) DivideBinaryNumber(int[] dividend, int[] divider)
@@ -103,6 +44,18 @@ namespace cipher
 
             int[] div = new int[dividend.Length + divider.Length];
             int[] mod = null;
+            bool[] was_divided = new bool[dividend.Length];
+            int[] current_minued = null;
+
+            try
+            {
+                SubtractBinaryNumber(TakeRange(dividend, 0, divider.Length), divider);
+                current_minued = TakeRange(dividend, 0, divider.Length);
+            }
+            catch
+            {
+                current_minued = TakeRange(dividend, 0, divider.Length + 1);
+            }
 
             int div_offset = 0;
             int offset = 0;
@@ -111,11 +64,13 @@ namespace cipher
             int offset_counter = 0;
             bool is_first_offset = true;
             int last_mod_index = 0;
+            bool mod_flag = false;
+            int last_zero_index = -1;
             while (true)
             {
                 try
                 {
-                    mod = SubtractBinaryNumber(TakeRange(dividend, 0, divider.Length + offset), divider);
+                    mod = SubtractBinaryNumber(current_minued, divider);
                     mod = RemoveLeadingZeros(mod);
                     div[div_offset] = 1;
                     div_offset++;
@@ -124,47 +79,82 @@ namespace cipher
                 }
                 catch (Exception e)
                 {
-                    if (e.Message == "The subtrahend cannot be more than the minuend")
+                    if (e.Message == "The subtrahend cannot be more than the minuend" && LastIndexOf(was_divided, false) == -1)
                     {
-                        offset++;
                         div[div_offset] = 0;
-                        if (!is_first_offset)
-                        {
-                            div_offset++;
-                        }
-                        continue;
+                        div_offset++;
+                        break;
                     }
                     else
                     {
-                        if (offset == 0)
-                        {
-                            div_offset++;
-                        }
-                        break;
+                        div[div_offset] = 0;
+                        div_offset++;
+                        mod = current_minued;
                     }
                 }
 
-                Fill(ref dividend, 0, divider.Length + offset, 0);
+                Fill(ref dividend, 0, current_minued.Length, 0);
+                Fill(ref was_divided, 0, current_minued.Length, true);
 
-                for (int i = 0, j = offset + divider.Length - mod.Length; i < mod.Length; j++, i++)
+                for (int i = 0, j = current_minued.Length - mod.Length; i < mod.Length; j++, i++)
                 {
                     dividend[j] = mod[i];
                     last_mod_index = j;
                 }
 
-                if(dividend[last_mod_index] == 0)
+                for (int i = 0; i < dividend.Length; i++)
                 {
-                    dividend = TakeRange(dividend, last_mod_index + 1, dividend.Length - last_mod_index - 1);
-                }
-                else
-                {
-                    dividend = TakeRange(dividend, last_mod_index, dividend.Length - last_mod_index);
+                    if (dividend[i] == 1 || !was_divided[i])
+                    {
+                        break;
+                    }
+                    if (was_divided[i])
+                    {
+                        last_zero_index = i;
+                    }
                 }
 
-                if (IsZero(dividend) && dividend.Length == 1)
+                dividend = TakeRange(dividend, last_zero_index + 1, dividend.Length - last_zero_index - 1);
+                was_divided = TakeRange(was_divided, last_zero_index + 1, was_divided.Length - last_zero_index - 1);
+
+                if (IsZero(dividend))
+                {
+                    for (int i = 0; i < dividend.Length; i++)
+                    {
+                        if (!was_divided[i])
+                        {
+                            div_offset++;
+                        }
+                    }
+                    break;
+                }
+
+                if (LastIndexOf(was_divided, true) == dividend.Length - 1)
                 {
                     break;
                 }
+                else
+                {
+                    int ind = FirstIndexOf(was_divided, false);
+                    if (ind != -1)
+                    {
+                        current_minued = new int[mod.Length + 1];
+                        for (int i = 0; i < mod.Length; i++)
+                        {
+                            current_minued[i] = mod[i];
+                        }
+                        current_minued[mod.Length] = dividend[ind];
+                        current_minued = RemoveLeadingZeros(current_minued);
+                    }
+                    else
+                    {
+                        div[div_offset] = 0;
+                        div_offset++;
+                        break;
+                    }
+                }
+
+                last_zero_index = -1;
                 offset = 0;
             }
 
@@ -174,9 +164,6 @@ namespace cipher
 
             return (div, mod);
         }
-
-
-        
 
         internal static int[] SubtractBinaryNumber(int[] minuend, int[] subtrahend)
         {
@@ -226,9 +213,150 @@ namespace cipher
             return minuend;
         }
 
-        internal static int[] TakeRange(int[] array, int start, int amount)
+        internal static int[] GetBinaryMultiply(int[] multiplicand, int[] factor)
         {
-            int[] res = new int[amount];
+            if (IsZero(multiplicand) || IsZero(factor))
+            {
+                return Zero;
+            }
+
+            multiplicand = RemoveLeadingZeros(multiplicand);
+            factor = RemoveLeadingZeros(factor);
+
+            int[] res = Zero;
+            int[] current = null;
+
+            if (multiplicand.Length > factor.Length)
+            {
+                for (int i = factor.Length - 1; i > -1; i--)
+                {
+                    if (factor[i] != 0)
+                    {
+                        current = new int[multiplicand.Length + (factor.Length - 1 - i)];
+                        for (int j = 0; j < multiplicand.Length; j++)
+                        {
+                            current[j] = multiplicand[j];
+                        }
+                        res = SumBinaryNumbers(res, current);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = multiplicand.Length - 1; i > -1; i--)
+                {
+                    if (multiplicand[i] != 0)
+                    {
+                        current = new int[factor.Length + (multiplicand.Length - 1 - i)];
+                        for (int j = 0; j < factor.Length; j++)
+                        {
+                            current[j] = factor[j];
+                        }
+                        res = SumBinaryNumbers(res, current);
+                    }
+                }
+            }
+
+            return res;
+        }
+
+        internal static int[] SumBinaryNumbers(int[] first, int[] second)
+        {
+            if (IsZero(first))
+            {
+                return second;
+            }
+            else if (IsZero(second))
+            {
+                return first;
+            }
+
+            first = RemoveLeadingZeros(first);
+            second = RemoveLeadingZeros(second);
+
+            int[] res = null;
+
+
+            int i = first.Length - 1;
+            int j = second.Length - 1;
+            int k;
+            int m;
+
+            if (first.Length > second.Length)
+            {
+                res = new int[first.Length + 1];
+                k = first.Length;
+
+                for (int l = 0; l < first.Length; l++)
+                {
+                    res[l + 1] = first[l];
+                }
+
+                for (; j > -1; j--, k--)
+                {
+                    m = k;
+                    while (k > -1 && res[k] > 1)
+                    {
+                        res[k] = 0;
+                        res[k - 1] += 1;
+                        k--;
+                    }
+                    k = m;
+                    res[k] += second[j];
+
+                    m = k;
+                    while (k > -1 && res[k] > 1)
+                    {
+                        res[k] = 0;
+                        res[k - 1] += 1;
+                        k--;
+                    }
+                    k = m;
+                }
+            }
+            else
+            {
+                res = new int[second.Length + 1];
+                k = second.Length;
+
+                for (int l = 0; l < second.Length; l++)
+                {
+                    res[l + 1] = second[l];
+                }
+
+                for (; i > -1; i--, k--)
+                {
+                    m = k;
+                    while (k > -1 && res[k] > 1)
+                    {
+                        res[k] = 0;
+                        res[k - 1] += 1;
+                        k--;
+                    }
+                    k = m;
+
+                    res[k] += first[i];
+
+                    m = k;
+                    while (k > -1 && res[k] > 1)
+                    {
+                        res[k] = 0;
+                        res[k - 1] += 1;
+                        k--;
+                    }
+                    k = m;
+                }
+            }
+
+            res = RemoveLeadingZeros(res);
+
+            return res;
+        }
+
+
+        internal static T[] TakeRange<T>(T[] array, int start, int amount)
+        {
+            T[] res = new T[amount];
 
             for (int i = start, j = 0; i < start + amount; i++, j++)
             {
@@ -236,11 +364,6 @@ namespace cipher
             }
 
             return res;
-        }
-
-        internal static int[] GetBinaryMultiply(int[] multiplicand, int[] factor)
-        {
-            throw new NotImplementedException();
         }
 
         internal static int[] RemoveLeadingZeros(int[] num)
@@ -296,7 +419,7 @@ namespace cipher
             return res;
         }
 
-        internal static void Fill(ref int[] binary, int start, int amount, int value)
+        internal static void Fill<T>(ref T[] binary, int start, int amount, T value)
         {
             for (int i = start; i < start + amount; i++)
             {
@@ -328,6 +451,46 @@ namespace cipher
 
             return -1;
             //throw new Exception("Required number not found");
+        }
+
+        internal static int FirstIndexOf(bool[] array, bool required)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] == required)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        internal static int LastIndexOf(bool[] array, bool required)
+        {
+            for (int i = array.Length - 1; i > -1; i--)
+            {
+                if (array[i] == required)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+            //throw new Exception("Required number not found");
+        }
+
+        internal static int FirstIndexOf(int[] array, int required_num)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] == required_num)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }

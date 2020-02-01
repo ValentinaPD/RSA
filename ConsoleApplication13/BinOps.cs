@@ -1,28 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BinOps
 {
-    static class BinOps
+    public static class BinOps
     {
         static int[] One = new int[] { 1 };
         static int[] Zero = new int[] { 0 };
 
-        #region mes
-        static string mes = "Sorry. Of course, I understand that I have to realize a situation where the multiplicand is shorter than the factor, but I'm very lazy, sorry again, please swap your values";
-        #endregion
-
-
-        internal static (int[], int[]) DivideBinaryNumber(int[] dividend, int[] divider)
+        public static (int[], int[]) DivideBinaryNumber(int[] dividend, int[] divider)
         {
             if (dividend.Length < divider.Length)
             {
                 return (Zero, dividend);
             }
 
+            //Compare the first zero`s positions
             if (dividend.Length == divider.Length)
             {
                 for (int i = 0, j = dividend.Length - divider.Length; i < divider.Length; i++, j++)
@@ -42,64 +34,58 @@ namespace BinOps
                 }
             }
 
-            int[] div = new int[dividend.Length + divider.Length];
-            int[] mod = null;
-            bool[] was_divided = new bool[dividend.Length];
-            int[] current_minued = null;
+            int[] div = new int[dividend.Length + divider.Length]; //Result
+            int[] mod = null;                                      //Modulo
+            bool[] was_divided = new bool[dividend.Length];        //The part of divident, which has already been divided (true)
+            int[] current_minuend = null;                          //The part of divident from which divider is subtracted
 
+            //Get the first minuend
+            //For example: in 10010 / 111
+            //current_minuend == 1001
             try
             {
                 SubtractBinaryNumber(TakeRange(dividend, 0, divider.Length), divider);
-                current_minued = TakeRange(dividend, 0, divider.Length);
+                current_minuend = TakeRange(dividend, 0, divider.Length);
             }
             catch
             {
-                current_minued = TakeRange(dividend, 0, divider.Length + 1);
+                current_minuend = TakeRange(dividend, 0, divider.Length + 1);
             }
 
-            int div_offset = 0;
-            int offset = 0;
-            int fail_offset = 0;
-            int counter = 0;
-            int offset_counter = 0;
-            bool is_first_offset = true;
-            int last_mod_index = 0;
-            bool mod_flag = false;
+            int div_offset = 0;             //The offset in the result
             int last_zero_index = -1;
             while (true)
             {
                 try
                 {
-                    mod = SubtractBinaryNumber(current_minued, divider);
+                    mod = SubtractBinaryNumber(current_minuend, divider);
                     mod = RemoveLeadingZeros(mod);
                     div[div_offset] = 1;
                     div_offset++;
-                    counter++;
-                    is_first_offset = false;
                 }
                 catch (Exception e)
                 {
+                    //The last subtraction, it is impossible to subtract anymore
                     if (e.Message == "The subtrahend cannot be more than the minuend" && LastIndexOf(was_divided, false) == -1)
                     {
                         div[div_offset] = 0;
                         div_offset++;
                         break;
                     }
-                    else
+                    else //The offset can be incremented, continue to subtract
                     {
                         div[div_offset] = 0;
                         div_offset++;
-                        mod = current_minued;
+                        mod = current_minuend;
                     }
                 }
 
-                Fill(ref dividend, 0, current_minued.Length, 0);
-                Fill(ref was_divided, 0, current_minued.Length, true);
+                Fill(ref dividend, 0, current_minuend.Length, 0);
+                Fill(ref was_divided, 0, current_minuend.Length, true);
 
-                for (int i = 0, j = current_minued.Length - mod.Length; i < mod.Length; j++, i++)
+                for (int i = 0, j = current_minuend.Length - mod.Length; i < mod.Length; j++, i++)
                 {
-                    dividend[j] = mod[i];
-                    last_mod_index = j;
+                    dividend[j] = mod[i]; //Write the result of subtraction into the dividend
                 }
 
                 for (int i = 0; i < dividend.Length; i++)
@@ -114,13 +100,18 @@ namespace BinOps
                     }
                 }
 
+                //Remove the parts which have already been divided
                 dividend = TakeRange(dividend, last_zero_index + 1, dividend.Length - last_zero_index - 1);
                 was_divided = TakeRange(was_divided, last_zero_index + 1, was_divided.Length - last_zero_index - 1);
 
+                //If dividend contains only zero`s
                 if (IsZero(dividend))
                 {
                     for (int i = 0; i < dividend.Length; i++)
                     {
+                        //Find all parts which has not yet been divided
+                        //For example: 1100 / 11
+                        //Two last zero`s will be considered
                         if (!was_divided[i])
                         {
                             div_offset++;
@@ -129,22 +120,24 @@ namespace BinOps
                     break;
                 }
 
+                //If the all parts of dividend have been divided
                 if (LastIndexOf(was_divided, true) == dividend.Length - 1)
                 {
                     break;
                 }
                 else
                 {
+                    //Try to take the next numeral from divident 
                     int ind = FirstIndexOf(was_divided, false);
                     if (ind != -1)
                     {
-                        current_minued = new int[mod.Length + 1];
+                        current_minuend = new int[mod.Length + 1];
                         for (int i = 0; i < mod.Length; i++)
                         {
-                            current_minued[i] = mod[i];
+                            current_minuend[i] = mod[i];
                         }
-                        current_minued[mod.Length] = dividend[ind];
-                        current_minued = RemoveLeadingZeros(current_minued);
+                        current_minuend[mod.Length] = dividend[ind];
+                        current_minuend = RemoveLeadingZeros(current_minuend);
                     }
                     else
                     {
@@ -155,7 +148,6 @@ namespace BinOps
                 }
 
                 last_zero_index = -1;
-                offset = 0;
             }
 
             div = RemoveLeadingZeros(div);
@@ -165,14 +157,16 @@ namespace BinOps
             return (div, mod);
         }
 
-        internal static int[] SubtractBinaryNumber(int[] minuend, int[] subtrahend)
+        public static int[] SubtractBinaryNumber(int[] minuend, int[] subtrahend)
         {
             minuend = RemoveLeadingZeros(minuend);
+
             if (minuend.Length < subtrahend.Length || IsZero(minuend))
             {
                 throw new Exception("The subtrahend cannot be more than the minuend");
             }
 
+            //Compare the first zero`s positions
             if (minuend.Length == subtrahend.Length)
             {
                 for (int i = 0; i < subtrahend.Length; i++)
@@ -199,6 +193,7 @@ namespace BinOps
                 j1 = k;
                 if (minuend[j1] < subtrahend[j])
                 {
+                    //Transfer 1 to low order
                     while (minuend[j1] < 1)
                     {
                         minuend[j1]++;
@@ -213,7 +208,7 @@ namespace BinOps
             return minuend;
         }
 
-        internal static int[] GetBinaryMultiply(int[] multiplicand, int[] factor)
+        public static int[] GetBinaryMultiply(int[] multiplicand, int[] factor)
         {
             if (IsZero(multiplicand) || IsZero(factor))
             {
@@ -260,7 +255,7 @@ namespace BinOps
             return res;
         }
 
-        internal static int[] SumBinaryNumbers(int[] first, int[] second)
+        public static int[] SumBinaryNumbers(int[] first, int[] second)
         {
             if (IsZero(first))
             {
@@ -354,7 +349,7 @@ namespace BinOps
         }
 
 
-        internal static T[] TakeRange<T>(T[] array, int start, int amount)
+        public static T[] TakeRange<T>(T[] array, int start, int amount)
         {
             T[] res = new T[amount];
 
@@ -366,7 +361,7 @@ namespace BinOps
             return res;
         }
 
-        internal static int[] RemoveLeadingZeros(int[] num)
+        public static int[] RemoveLeadingZeros(int[] num)
         {
             int i = 0;
             while (i < num.Length && num[i] == 0)
@@ -387,7 +382,7 @@ namespace BinOps
             return result;
         }
 
-        internal static int[] DecimalToBinary(int dec)
+        public static int[] DecimalToBinary(int dec)
         {
             int result_length = 1;
 
@@ -407,7 +402,7 @@ namespace BinOps
             return res;
         }
 
-        internal static int BinaryToDecimal(int[] binary)
+        public static int BinaryToDecimal(int[] binary)
         {
             int res = 0;
 
@@ -419,7 +414,7 @@ namespace BinOps
             return res;
         }
 
-        internal static void Fill<T>(ref T[] binary, int start, int amount, T value)
+        public static void Fill<T>(ref T[] binary, int start, int amount, T value)
         {
             for (int i = start; i < start + amount; i++)
             {
@@ -427,7 +422,7 @@ namespace BinOps
             }
         }
 
-        internal static bool IsZero(int[] binary)
+        public static bool IsZero(int[] binary)
         {
             for (int i = 0; i < binary.Length; i++)
             {
@@ -439,7 +434,7 @@ namespace BinOps
             return true;
         }
 
-        internal static int LastIndexOf(int[] array, int required_num)
+        public static int LastIndexOf(int[] array, int required_num)
         {
             for (int i = array.Length - 1; i > -1; i--)
             {
@@ -453,7 +448,7 @@ namespace BinOps
             //throw new Exception("Required number not found");
         }
 
-        internal static int FirstIndexOf(bool[] array, bool required)
+        public static int FirstIndexOf(bool[] array, bool required)
         {
             for (int i = 0; i < array.Length; i++)
             {
@@ -466,7 +461,7 @@ namespace BinOps
             return -1;
         }
 
-        internal static int LastIndexOf(bool[] array, bool required)
+        public static int LastIndexOf(bool[] array, bool required)
         {
             for (int i = array.Length - 1; i > -1; i--)
             {
@@ -480,7 +475,7 @@ namespace BinOps
             //throw new Exception("Required number not found");
         }
 
-        internal static int FirstIndexOf(int[] array, int required_num)
+        public static int FirstIndexOf(int[] array, int required_num)
         {
             for (int i = 0; i < array.Length; i++)
             {
@@ -492,5 +487,6 @@ namespace BinOps
 
             return -1;
         }
+
     }
 }

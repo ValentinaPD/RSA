@@ -151,11 +151,11 @@ namespace ConsoleApplication13
                 long i = 0;
                 while (i < d)
                 {
-                    m = m * CryptoText[j];
-                    m = m % n;
+                    m *= CryptoText[j];
+                    m %= n;
                     i++;
                 }
-                m = m - b;
+                m -= b;
                 Tdecrypt[j] = m;
                 b += 1;
                 str+=GetSymbolNumber(Tdecrypt[j]);
@@ -189,6 +189,14 @@ namespace ConsoleApplication13
             string Text = "i love you c#, но php тоже не плох!";
 
             string str = Decrypt(Encrypt(Text, e, n), d, n);
+
+            int[] a =  Encrypt(Text, e, n);
+
+            for(int i = 0; i < a.Length; i++)
+            {
+                Console.WriteLine(a[i].ToString());
+            }
+            Console.WriteLine();
             Console.WriteLine(str);
             
            

@@ -4,3 +4,12 @@ C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\bin\Debu
 C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\obj\Debug\ConsoleApplication13.csprojResolveAssemblyReference.cache
 C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\obj\Debug\ConsoleApplication13.exe
 C:\Users\Home\Desktop\Taskers\ConsoleApplication13\ConsoleApplication13\obj\Debug\ConsoleApplication13.pdb
+E:\Проекты\RSA\ConsoleApplication13\bin\Debug\ConsoleApplication13.exe.config
+E:\Проекты\RSA\ConsoleApplication13\bin\Debug\ConsoleApplication13.exe
+E:\Проекты\RSA\ConsoleApplication13\bin\Debug\ConsoleApplication13.pdb
+E:\Проекты\RSA\ConsoleApplication13\bin\Debug\System.ValueTuple.dll
+E:\Проекты\RSA\ConsoleApplication13\bin\Debug\System.ValueTuple.xml
+E:\Проекты\RSA\ConsoleApplication13\obj\Debug\ConsoleApplication13.csprojAssemblyReference.cache
+E:\Проекты\RSA\ConsoleApplication13\obj\Debug\ConsoleApplication13.csproj.CopyComplete
+E:\Проекты\RSA\ConsoleApplication13\obj\Debug\ConsoleApplication13.exe
+E:\Проекты\RSA\ConsoleApplication13\obj\Debug\ConsoleApplication13.pdb

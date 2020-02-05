@@ -24,9 +24,8 @@ namespace ConsoleApplication13
            
             string str = cryptor.Decrypt(enctr, PrivateKey);
             Console.WriteLine(str);
-            
         }
-        
+       
     }
     public class key
     {
@@ -92,20 +91,21 @@ namespace ConsoleApplication13
            
             this.PublicKey.EditKeys(d, n);
             this.PrivateKey.EditKeys(e, n);
+            Console.WriteLine("p={0},q={1},d={2},e={3}", p, q, d, e);
         }
         public static int GetD(int fn)
         {
             Random rand = new Random();
             int d = 0;
             do
-                d = rand.Next() % 100000;
+                d = rand.Next() % 1000;
             while (nod(d, fn) != 1);
             return d;
         }
         public static int GetE(int fn, int d)
         {
             Random rand = new Random();
-            int e = rand.Next() % 10000;
+            int e = rand.Next() % 1000;
             do
                 e += 1;
             while ((e * d) % (fn) != 1);
@@ -125,18 +125,46 @@ namespace ConsoleApplication13
                     return (2 * i + 1);
             return 3;
         }
+        bool ferma(int t, int n)
+        {
+            for (int i = 0; i < t; i++)
+            {
+                Random rand = new Random();
+                int a = 0;
+                do
+                {
+                    a = rand.Next() % 100;
+                } while (!((a < n - 2) && (a > 2)));
+                int r = 1;
+                for (int j = 0; j < n - 1; j++)
+                {
+                    r *= a;
+                    r %= n;
+                }
+                if (r != 1)
+                    return false;
+            }
+            return true;
+        }
         int GetPrimeNumber()
         {
             Random rand = new Random();
-            int p;
+            int p=0;
+            //int k = 0;
+            //do
+            //{
+            //   p = rand.Next() % 100;
+            //   p = sundaram(p);
+            //} while (p < 100);
+          
+            
             do
             {
-                p = rand.Next() % 100;
-                p = sundaram(p);
-            } while (p < 100);
-
+                p = rand.Next() % 1000;
+            } while (!ferma(20, p));
             return p;
         }
+        
         public static int nod(int a, int b)
         {
             int c;
@@ -155,20 +183,20 @@ namespace ConsoleApplication13
         {
 
             int[] CryptoText = new int[str.Length];
-            int b = 301;
-            int c;
+            long b = 301;
+            long c;
             for (int j = 0; j < str.Length; j++)
             {
                 c = 1;
                 long i = 0;
-                int ASCIIcode = GetNumberSymbol(str[j]) + b;
+                long ASCIIcode = GetNumberSymbol(str[j]) + b;
                 while (i < e)
                 {
                     c = c * ASCIIcode;
                     c = c % n;
                     i++;
                 }
-                CryptoText[j] = c;
+                CryptoText[j] = Convert.ToInt32(c);
 
                 b += 1;
             }
@@ -181,8 +209,8 @@ namespace ConsoleApplication13
         public string Decrypt(int[] CryptoText, int d, int n)
         {
             int[] Tdecrypt = new int[CryptoText.Length];
-            int b = 301;
-            int m;
+            long b = 301;
+            long m;
             string str = "";
             for (int j = 0; j < CryptoText.Length; j++)
             {
@@ -195,7 +223,7 @@ namespace ConsoleApplication13
                     i++;
                 }
                 m = m - b;
-                Tdecrypt[j] = m;
+                Tdecrypt[j] = Convert.ToInt32(m);
                 b += 1;
                 str += GetSymbolNumber(Tdecrypt[j]);
             }
